@@ -3,6 +3,8 @@
 public class PlatformerCharacter2D : MonoBehaviour 
 {
 	bool facingRight = true;							// For determining which way the player is currently facing.
+	bool door = false;
+	static bool openDoor = false;
 
 	[SerializeField] float maxSpeed = 10f;				// The fastest the player can travel in the x axis.
 	[SerializeField] float jumpForce = 400f;			// Amount of force added when the player jumps.	
@@ -12,7 +14,14 @@ public class PlatformerCharacter2D : MonoBehaviour
 	
 	[SerializeField] bool airControl = false;			// Whether or not a player can steer while jumping;
 	[SerializeField] LayerMask whatIsGround;			// A mask determining what is ground to the character
-	
+	[SerializeField] LayerMask whatIsDoor;
+
+	Transform rightWallCheck;
+	Transform leftWallCheck;
+	bool leftwallgrab = false;	
+	bool rightwallgrab = false;						// A position marking where to check for ceilings
+	float leftGrabRadius = .01f;						// A position marking where to check for ceilings
+	float rightGrabRadius = .01f;		
 	Transform groundCheck;								// A position marking where to check if the player is grounded.
 	float groundedRadius = .2f;							// Radius of the overlap circle to determine if grounded
 	bool grounded = false;								// Whether or not the player is grounded.
@@ -26,6 +35,8 @@ public class PlatformerCharacter2D : MonoBehaviour
 	{
 		// Setting up references.
 		groundCheck = transform.Find("GroundCheck");
+		leftWallCheck = transform.Find ("Leftwallcheck");
+		rightWallCheck = transform.Find ("Rightwallcheck");
 		ceilingCheck = transform.Find("CeilingCheck");
 		anim = GetComponent<Animator>();
 		playerGraphics = transform.FindChild ("Player_Sprite");
@@ -33,20 +44,28 @@ public class PlatformerCharacter2D : MonoBehaviour
 			Debug.LogError("Player Graphics Do not Exist");	
 		}
 	}
-
+	
+	public static bool doorCheck(){
+		return openDoor;
+	}
 
 	void FixedUpdate()
 	{
+
 		// The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
 		grounded = Physics2D.OverlapCircle(groundCheck.position, groundedRadius, whatIsGround);
+		door = Physics2D.OverlapCircle(groundCheck.position, groundedRadius, whatIsDoor);
 		anim.SetBool("Ground", grounded);
-
+//		rightwallgrab = Physics2D.OverlapCircle (rightWallCheck.position, rightGrabRadius, whatIsGround);
+//		anim.SetBool ("RightGrab", rightwallgrab);
+//		leftwallgrab = Physics2D.OverlapCircle (leftWallCheck.position, leftGrabRadius, whatIsGround);
+//		anim.SetBool ("LeftGrab", leftwallgrab);
 		// Set the vertical animation
 		anim.SetFloat("vSpeed", rigidbody2D.velocity.y);
 	}
 
 
-	public void Move(float move, bool crouch, bool jump)
+	public void Move(float move, bool crouch, bool jump, bool interact)
 	{
 
 
@@ -85,10 +104,21 @@ public class PlatformerCharacter2D : MonoBehaviour
 
         // If the player should jump...
         if (grounded && jump) {
-            // Add a vertical force to the player.
-            anim.SetBool("Ground", false);
-            rigidbody2D.AddForce(new Vector2(0f, jumpForce));
-        }
+			// Add a vertical force to the player.
+			anim.SetBool ("Ground", false);
+			rigidbody2D.AddForce (new Vector2 (0f, jumpForce));
+		} 
+		if (door && interact) {
+			openDoor = true;	
+		}
+//		else if (rightwallgrab && jump) {
+//			anim.SetBool ("RightGrab", false);
+//			rigidbody2D.AddForce (new Vector2 (-1f, jumpForce));
+//		} 
+//		else if (leftwallgrab && jump) {
+//			anim.SetBool ("LeftGrab", false);
+//			rigidbody2D.AddForce (new Vector2 (1f, jumpForce));
+//		}
 	}
 
 	

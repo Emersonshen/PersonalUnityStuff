@@ -5,6 +5,7 @@ public class Platformer2DUserControl : MonoBehaviour
 {
 	private PlatformerCharacter2D character;
     private bool jump;
+	private bool interact;
 
 
 	void Awake()
@@ -26,6 +27,7 @@ public class Platformer2DUserControl : MonoBehaviour
 	void FixedUpdate()
 	{
 		// Read the inputs.
+		interact = Input.GetKey (KeyCode.E);
 		bool crouch = Input.GetKey(KeyCode.LeftControl);
 		#if CROSS_PLATFORM_INPUT
 		float h = CrossPlatformInput.GetAxis("Horizontal");
@@ -34,7 +36,7 @@ public class Platformer2DUserControl : MonoBehaviour
 		#endif
 
 		// Pass all parameters to the character control script.
-		character.Move( h, crouch , jump );
+		character.Move( h, crouch , jump, interact );
 
         // Reset the jump input once it has been used.
 	    jump = false;

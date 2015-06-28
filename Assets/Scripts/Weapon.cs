@@ -5,7 +5,7 @@ public class Weapon : MonoBehaviour {
 
 
 	public float fireRate = 0;
-	public float damage = 10;
+	public int damage = 10;
 	public LayerMask toHit;
 	public Transform bulletPrefab;
 	public float bulletSpawnRate = 10;
@@ -56,6 +56,14 @@ public class Weapon : MonoBehaviour {
 		if(Time.time >= timeToSpawnBullet){
 			Effect();
 			timeToSpawnBullet = Time.time + 1/bulletSpawnRate;
+		}
+		if (hit.collider != null) {
+				
+			Enemy enemy = hit.collider.GetComponent<Enemy>();
+			if(enemy != null){
+				Debug.Log ("You hit " + hit.collider.name + "and did " + damage + " damage.");
+				enemy.DamageEnemy (damage);
+			}
 		}
 	}
 }

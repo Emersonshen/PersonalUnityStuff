@@ -1,6 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public class BitMaskAttribute : PropertyAttribute
+{
+	public System.Type propType;
+	public BitMaskAttribute(System.Type aType)
+	{
+		propType = aType;
+	}
+}
+
+
 public class GameMaster : MonoBehaviour {
 
 	public static GameMaster gm;
@@ -9,7 +19,9 @@ public class GameMaster : MonoBehaviour {
 	public int respawnTime = 2;
 	public Transform particlePrefab;
 	
-
+	public static void KillEnemy(Enemy enemy){
+		Destroy (enemy.gameObject);
+	}
 
 	public static void KillPlayer(Player player){
 		Destroy(player.gameObject);
